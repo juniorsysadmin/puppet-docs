@@ -8,11 +8,11 @@ The Puppet Language Style Guide
 
 #### Metadata
 
-Puppet Language Style Guide: Version 2.0.1
+Puppet Language Style Guide: Version 3.0
 
-Puppet: Version 3.7+
+Puppet: Version 4.0+
 
-(Note: While the style guide maps to Puppet 3.7, many of its recommendations apply to Puppet 3.0.x and up.)
+(Note: While the style guide maps to Puppet 4.0, many of its recommendations apply to Puppet 3.0.x and up.)
 
 
 ## 1. Terminology
@@ -21,25 +21,23 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be
 interpreted as described in [RFC 2119](http://www.faqs.org/rfcs/rfc2119.html).
 
-Unless explicitly called out, everything discussed here applies specifically to Puppet (i.e. Puppet modules, Puppet classes, etc.). To save your eyes and our fingers, 'Puppet' is not appended to every topic discussed.
+Unless explicitly called out, everything discussed here applies specifically to Puppet (that is, Puppet modules, Puppet classes, etc.). The name 'Puppet' is not appended to every topic discussed.
 
 ## 2. Purpose
 
-The purpose of this style guide is to promote consistent formatting across modules (from Puppet and the community), which gives users and developers of Puppet modules a common pattern, design, and style to follow. Additionally, consistency in code and module structure makes continued development and contributions easier.
+The purpose of this style guide is to promote consistent formatting across modules (from Puppet and the community), giving users and developers of Puppet modules a common pattern, design, and style to follow. Additionally, consistency in code and module structure makes continued development and contributions easier.
 
 ## 3. Guiding principles
 
-We can never cover every possible circumstance you might run into when developing Puppet code or creating a module. Eventually, a judgement call is necessary. When that happens, keep in mind the following general principles:
+We can never cover every circumstance you might run into when developing Puppet code. When you need to make a judgement call, keep in mind these general principles:
 
 1.  **Readability matters.**
     
-    If you have to choose between two equally effective alternatives, pick the
-    more readable one. While this is subjective, if you can read your
-    own code three months from now, it's a great start. In particular, code that generates readable diffs is highly preferred.
+    If you have to choose between two equal alternatives, pick the more readable one. This is subjective, but if you can read your own code three months from now, it's a great start. In particular, code that generates readable diffs is highly preferred.
     
 2. **Scoping and simplicity are key.**
 
-    When in doubt, err on the side of simplicity. A module should contain related resources that enable it to accomplish a task. If you describe the function of your module and you find yourself using the word 'and,' it's time to split the module at the 'and.' You should have one goal, with all your classes and parameters focused on achieving it.
+    When in doubt, err on the side of simplicity. A module should contain related resources that enable it to accomplish a task. If you describe the function of your module and you find yourself using the word 'and,' it's time to split the module. You should have one goal, with all your classes and parameters focused on achieving it.
 
 3. **Your module is a piece of software.**
 
@@ -47,7 +45,7 @@ We can never cover every possible circumstance you might run into when developin
 
 ## 4. Versioning
 
-Your module must be versioned. We recommend (and use) [SemVer](http://semver.org/spec/v1.0.0.html); meaning for a version x.y.z., an increase in x indicates backwards incompatible changes or a complete rewrite, an increase in y indicates the addition of new features, and an increase in z indicates non-breaking bug fixes. 
+Your module must be versioned. We recommend (and use) [SemVer](http://semver.org/spec/v1.0.0.html); meaning that for a version x.y.z., an increase in x indicates backwards incompatible changes or a complete rewrite, an increase in y indicates the addition of new features, and an increase in z indicates non-breaking bug fixes. 
 
 This style guide is versioned using SemVer.
 
@@ -58,10 +56,10 @@ Module manifests:
 * Must use two-space soft tabs,
 * Must not use literal tab characters,
 * Must not contain trailing whitespace,
-* Must have trailing commas after all resource attributes and parameter definitions,
+* Must include trailing commas after all resource attributes and parameter definitions,
 * Should not exceed a 140-character line width,
 * Should leave one empty line between resources, except when using dependency chains, and
-* Should align hash rockets (`=>`) within blocks of attributes, remembering to arrange hashes for maximum readability first.
+* May align hash rockets (`=>`) within blocks of attributes, remembering to arrange hashes for maximum readability first.
 
 ## 6. Quoting
 
@@ -196,9 +194,9 @@ All resource names or titles must be quoted. If you are using an array of titles
 
 ### 9.2. Arrow alignment
 
-All of the hash rockets (`=>`) in a resource's attribute/value list should
+All of the hash rockets (`=>`) in a resource's attribute/value list may
 be aligned. The hash rockets should be placed one space ahead of the longest
-attribute name. Nested blocks must be indented by two spaces, and hash rockets within a nested block should be aligned (one space ahead of the longest attribute name).
+attribute name. Nested blocks must be indented by two spaces, and hash rockets within a nested block may be aligned (one space ahead of the longest attribute name).
  
 
 **Good:**
