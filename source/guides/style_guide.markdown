@@ -724,15 +724,15 @@ file { 'Required VHost directory':
 
 ### 13.1. Namespacing Variables
 
-When referencing top-scope variables, explicitly specify empty namespaces for clarity and improved readability.
+When referencing top-scope variables, including facts, explicitly specify empty namespaces for clarity and improved readability.
  
-This is not necessary for the variables:
+This is not necessary for:
  
-* `$facts`
-* `$trusted`
-* `$server_facts`
+* the `$facts` hash.
+* the `$trusted` hash.
+* the `$server_facts` hash.
 
-These names are protected; since you cannot create local variables with these names, they always refer to top-scope variables.
+These special variable names are protected; since you cannot create local variables with these names, they always refer to top-scope variables.
 
 **Good:**
 
