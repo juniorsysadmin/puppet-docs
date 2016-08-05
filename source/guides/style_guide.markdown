@@ -27,6 +27,8 @@ Unless explicitly called out, everything discussed here applies specifically to 
 
 The purpose of this style guide is to promote consistent formatting across modules (from Puppet and the community), giving users and developers of Puppet modules a common pattern, design, and style to follow. Additionally, consistency in code and module structure makes continued development and contributions easier.
 
+This guide also provides a reference for the development of [puppet-lint](http://puppet-lint.com/) and [metadata-json-lint](https://github.com/nibalizer/metadata-json-lint)[.](http://fc09.deviantart.net/fs70/i/2012/232/0/a/welcome_to_the_internet__please_follow_me_by_sharpwriter-d5buwfu.jpg)
+.
 ## 3. Guiding principles
 
 We can never cover every circumstance you might run into when developing Puppet code. When you need to make a judgement call, keep in mind these general principles:
@@ -57,15 +59,15 @@ Module manifests:
 * Must not use literal tab characters,
 * Must not contain trailing whitespace,
 * Must include trailing commas after all resource attributes and parameter definitions,
-* Should not exceed a 140-character line width,
+* Should not exceed a 140-character line width, except where such a limit would be impractical,
 * Should leave one empty line between resources, except when using dependency chains, and
 * May align hash rockets (`=>`) within blocks of attributes, remembering to arrange hashes for maximum readability first.
 
 ## 6. Quoting
 
-* All strings must be enclosed in single quotes, unless they contain variables or single quotes.  
+* All strings must be enclosed in single quotes, unless they contain variables, single quotes, or escaped characters not supported by single quoted strings
 * Quoting is optional when the string is an enumerable set of options (such as present/absent).
-* All variables must be enclosed in braces when interpolated in a string.  For example:
+* All variables must be enclosed in braces when interpolated in a string. For example:
 
 **Good:**
 
@@ -81,22 +83,7 @@ Module manifests:
     "$::operatingsystem is not supported by $module_name"
 ```
 
-* Variables standing by themselves should not be quoted, unless they are a resource title.  For example:
-
-**Good:**
-
-```
-    mode => $my_mode
-```
-
-**Bad:**
-
-```
-    mode => "$my_mode"
-    mode => "${my_mode}"
-```
-
-* Double quotes should be used rather than escaping when a string contains single quotes.
+* Double quotes should be used rather than escaping when a string contains single quotes, unless that would require an inconvenient amount of additional escaping.
 
 **Good:**  
 
@@ -192,9 +179,11 @@ All resource names or titles must be quoted. If you are using an array of titles
     package { openssh: ensure => present }
 ```
 
+These quoting requirements do not apply to expressions that evaluate to strings.
+
 ### 9.2. Arrow alignment
 
-All of the hash rockets (`=>`) in a resource's attribute/value list may
+Hash rockets (`=>`) in a resource's attribute/value list may
 be aligned. The hash rockets should be placed one space ahead of the longest
 attribute name. Nested blocks must be indented by two spaces, and hash rockets within a nested block may be aligned (one space ahead of the longest attribute name).
  
@@ -225,13 +214,8 @@ attribute name. Nested blocks must be indented by two spaces, and hash rockets w
 
 ```
     exec { 'hambone':
-      path  => '/usr/bin',
-      cwd => '/tmp',
-    }
-
-    exec { 'test':
-      subscribe => File['/etc/test'],
-      refreshonly => true,
+    path  => '/usr/bin',
+    cwd => '/tmp',
     }
 ```
 
@@ -323,6 +307,7 @@ Symbolic links must be declared with an ensure value of `ensure => link` and exp
 * POSIX symbolic notation must be a string.
 * You should not use file mode with Windows; instead use the [acl module](https://forge.puppet.com/puppetlabs/acl).
 * You should use numeric notation whenever possible.
+* The file mode attribute should always be a quoted string, never an integer
 
 **Good:**
 
@@ -408,6 +393,7 @@ Classes and defined types must be structured to accomplish one task. Below is a 
 
 1. First line: Name of class or type.
 1. Following lines, if applicable: Define parameters.
+1. Next lines: Includes should come after parameters are defined and before validation.
 1. Next lines: Should validate* any parameters and fail catalog compilation if any
     parameters are invalid. (See [ntp](https://github.com/puppetlabs/puppetlabs-ntp/blob/3.3.0/manifests/init.pp#L28-L49) for an example.)
 1. Next lines, if applicable: Should declare local variables and perform variable munging.
@@ -491,11 +477,9 @@ We recommend that you split your module into public and private classes and defi
 
 You should help indicate to the user which classes are which by both calling out the public classes in the README and making sure all public classes have complete [comments](#comments).
 
->Note: As of stdlib 4.4.0, there is a `private` function that causea a failure if a private class is called externally. You can use this to enforce the privacy of private classes.
-
 ### 10.4. Chaining Arrow Syntax
 
-Most of the time, use [relationship metaparameters](https://docs.puppet.com/puppet/latest/reference/lang_relationships.html#relationship-metaparameters) rather than [chaining arrows](https://docs.puppet.com/puppet/latest/reference/lang_relationships.html#chaining-arrows). When you have many [interdependent or order-specific items](https://github.com/puppetlabs/puppetlabs-mysql/blob/3.1.0/manifests/server.pp#L64-L72), chaining syntax may be used.  Chaining arrows must be used left to right.
+Most of the time, use [relationship metaparameters](https://docs.puppet.com/puppet/latest/reference/lang_relationships.html#relationship-metaparameters) rather than [chaining arrows](https://docs.puppet.com/puppet/latest/reference/lang_relationships.html#chaining-arrows). When you have many [interdependent or order-specific items](https://github.com/puppetlabs/puppetlabs-mysql/blob/3.1.0/manifests/server.pp#L64-L72), chaining syntax may be used. A chain operator should appear on the same line as its right-hand operand. Chaining arrows must be used left to right.
 
 **Good:** 
 
@@ -584,6 +568,7 @@ class my_module (
 ```
 
 ### 10.8 Exported Resources
+
 Exported resources should be opt-in rather than opt-out. Your module should not be written to use exported resources to function by default unless it is expressly required. When using exported resources, you should name the property `collect_exported`.
 
 Exported resources should be exported and collected selectively using a [search expression](https://docs.puppet.com/puppet/3.7/reference/lang_collectors.html#search-expressions), ideally allowing user-defined tags as parameters so tags can be used to selectively collect by environment or custom fact.
@@ -739,9 +724,15 @@ file { 'Required VHost directory':
 
 ### 13.1. Namespacing Variables
 
-You must scope all variables except for local or inherited variables. Scope inherited variables, when appropriate, for clarity. You should not mask/shadow inherited variables.
+When referencing top-scope variables, explicitly specify empty namespaces for clarity and improved readability.
+ 
+This is not necessary for the variables:
+ 
+* `$facts`
+* `$trusted`
+* `$server_facts`
 
-You should avoid accidental scoping issues by explicitly specifying empty namespaces when using top-scope variables, including facts.
+These names are protected; since you cannot create local variables with these names, they always refer to top-scope variables.
 
 **Good:**
 
@@ -876,6 +867,3 @@ Your module should have a CHANGELOG in .md (or .markdown) format. Your CHANGELOG
 * List bugfixes and features included in the release. 
 * Specifically call out backwards-incompatible changes
 
-## 19. Verifying style
-
-This guide helps development of [puppet-lint](http://puppet-lint.com/) and [metadata-json-lint](https://github.com/nibalizer/metadata-json-lint)[.](http://fc09.deviantart.net/fs70/i/2012/232/0/a/welcome_to_the_internet__please_follow_me_by_sharpwriter-d5buwfu.jpg)
