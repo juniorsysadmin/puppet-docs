@@ -307,7 +307,7 @@ Symbolic links must be declared with an ensure value of `ensure => link` and exp
 * POSIX symbolic notation must be a string.
 * You should not use file mode with Windows; instead use the [acl module](https://forge.puppet.com/puppetlabs/acl).
 * You should use numeric notation whenever possible.
-* The file mode attribute should always be a quoted string, never an integer
+* The file mode attribute should always be a quoted string, never an integer.
 
 **Good:**
 
@@ -688,7 +688,6 @@ Class inheritance should only be used for `myclass::params` parameter defaults. 
 ### 11.2 A Note About Publicly Available Modules
 
 When declaring classes in publicly available modules, you should use `include`, `contain`, or `require` rather than class resource declaration. This avoids duplicate class declarations and vendor lock-in.
-
 
 ## 12. Defined Resource Types 
 
