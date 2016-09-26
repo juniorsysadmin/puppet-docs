@@ -99,7 +99,7 @@ warning('Class[\'apache\'] parameter purge_vdir is deprecated in favor of purge_
 
 ## 7. Comments
 
-You must use hash comments (`# This is a comment`). Comments should explain the **why**, not the **how**, of your code.
+You must use hash comments (`# This is a comment`), not `/* */` comments. Comments should explain the **why**, not the **how**, of your code.
 
 **Good:**
 
@@ -238,7 +238,7 @@ first attribute specified so a user can quickly see if the resource is being cre
 
 ### 9.4. Resource arrangement
 
-Within a manifest, resources should be grouped by logical relationship to each other, rather than by resource type. Semicolons must not be used to declare multiple resources within a set of curly braces.
+Within a manifest, resources should be grouped by logical relationship to each other, rather than by resource type. Semicolon separated multiple resource bodies should only be used in conjunction with a local default body.
 
 **Good:**
 
