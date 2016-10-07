@@ -12,7 +12,7 @@ Puppet Language Style Guide: Version 3.0
 
 Puppet: Version 4.0+
 
-(Note: While the style guide maps to Puppet 4.0, many of its recommendations apply to Puppet 3.0.x and up.)
+(Note: While the style guide maps to Puppet 4.0, it also applies to Puppet 3.0.x and up when using the future parser.) [TODO: "many recommendations apply to 3.0+, even w/legacy parser?]
 
 
 ## 1. Terminology
@@ -96,6 +96,12 @@ warning("Class['apache'] parameter purge_vdir is deprecated in favor of purge_co
 ```
 warning('Class[\'apache\'] parameter purge_vdir is deprecated in favor of purge_configs')
 ```
+
+6.1. Escape characters
+
+Puppet uses backslashes as an escape character. For both single- and double-quoted strings, escape the backslash to remove this special meaning: `//`. This means that for every backslash you want to include in the resulting string, use two backslashes. For two literal backslashes, you would use four backslashes in total.
+
+Do not rely on unrecognized escaped characters as a method for including the backslash and the character following it.
 
 ## 7. Comments
 
@@ -238,7 +244,7 @@ first attribute specified so a user can quickly see if the resource is being cre
 
 ### 9.4. Resource arrangement
 
-Within a manifest, resources should be grouped by logical relationship to each other, rather than by resource type. Semicolon separated multiple resource bodies should only be used in conjunction with a local default body.
+Within a manifest, resources should be grouped by logical relationship to each other, rather than by resource type.
 
 **Good:**
 
@@ -278,6 +284,56 @@ Within a manifest, resources should be grouped by logical relationship to each o
     file { '/tmp/dir2/b':
       content => 'b',
     }
+```
+
+Semicolon-separated multiple resource bodies should be used only in conjunction with a local default body.
+
+**Good:**
+
+```
+$defaults = { < hash of defaults > }
+
+file {
+  default : 
+    * => $defaults ;
+
+  '/tmp/foo' :
+   content => "foos content"
+}
+```
+
+**Good: Repeated pattern with defaults:**
+
+```
+$defaults = { < hash of defaults > }
+
+file {
+  default : 
+    * => $defaults ;
+
+  '/tmp/motd' :
+   content => "message of the day" ;
+
+  '/tmp/motd_tomorrow' :
+   content => "tomorrows message of the day" ;
+}
+```
+
+**Bad: Unrelated resources grouped:**
+
+```
+file {
+  '/tmp/foo':
+    owner => 'admin',
+    mode => '0644',
+    contents => 'this is the content';
+
+  '/opt/myapp:
+    owner => 'myapp-admin',
+    mode => '0644'
+    source => 'puppet://<someurl>';
+  
+# etc
 ```
 
 ### 9.5. Symbolic links
@@ -387,6 +443,29 @@ All classes and resource type definitions (defined types) must be separate files
 
 Separating classes and defined types into separate files is functionally identical to declaring them in init.pp, but has the benefit of highlighting the structure of the module and making the function and structure more legible.
 
+In addition, each separate file in the manifest directory of the module should contain nothing other than the class or resource type definition.
+
+When a resource or include statement is placed outside of a class, node definition or defined type, it is included in all catalogs. This can have undesired effects and is not always easy to detect.
+
+**Good:**
+
+```
+#manifests/init.pp:
+class { 'foo':
+  include bar
+}
+```
+
+**Bad:**
+
+```
+#manifests/init.pp:
+class { 'foo':
+...
+}
+include bar
+```
+
 ### 10.2. Internal organization of classes and defined types
 
 Classes and defined types must be structured to accomplish one task. Below is a line-by-line general layout of what lines of code should come first, second, and so on. 
@@ -483,11 +562,20 @@ Most of the time, use [relationship metaparameters](https://docs.puppet.com/pupp
 
 **Good:** 
 
-    Package['httpd'] -> Service['httpd']
+```
+Package['httpd'] -> Service['httpd']
+```
 
 **Bad:**
 
-    Service['httpd'] <- Package['httpd']
+```
+# arrows are not all pointing to the right
+Service['httpd'] <- Package['httpd']
+ 
+# must be all on one line
+Service['httpd'] <-
+Package['httpd']
+```
 
 ### 10.5. Nested classes or defined types
 
@@ -511,7 +599,7 @@ Classes and defined resource types must not be defined within other classes or d
 
 ### 10.6. Display Order of Parameters
 
-In parameterized class and defined type declarations, required parameters must be listed before optional parameters (i.e., parameters with defaults).
+In parameterized class and defined type declarations, required parameters must be listed before optional parameters (that is, parameters with defaults). Required parameters are parameters which are not set to anything, including undef. For example, parameters that specify passwords have no reasonable default value.
 
 **Good:**
 
