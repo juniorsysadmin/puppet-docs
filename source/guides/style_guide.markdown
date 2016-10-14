@@ -27,8 +27,9 @@ Unless explicitly called out, everything discussed here applies specifically to 
 
 The purpose of this style guide is to promote consistent formatting across modules (from Puppet and the community), giving users and developers of Puppet modules a common pattern, design, and style to follow. Additionally, consistency in code and module structure makes continued development and contributions easier.
 
-This guide also provides a reference for the development of [puppet-lint](http://puppet-lint.com/) and [metadata-json-lint](https://github.com/nibalizer/metadata-json-lint)[.](http://fc09.deviantart.net/fs70/i/2012/232/0/a/welcome_to_the_internet__please_follow_me_by_sharpwriter-d5buwfu.jpg)
-.
+Suggest using puppet-lint and metadata-json-lint within your module to check for compliance with the style guide.
+We recommend using [puppet-lint](http://puppet-lint.com/) and [metadata-json-lint](https://github.com/nibalizer/metadata-json-lint) within your module to check for compliance with the style guide.
+
 ## 3. Guiding principles
 
 We can never cover every circumstance you might run into when developing Puppet code. When you need to make a judgement call, keep in mind these general principles:
@@ -97,7 +98,7 @@ warning("Class['apache'] parameter purge_vdir is deprecated in favor of purge_co
 warning('Class[\'apache\'] parameter purge_vdir is deprecated in favor of purge_configs')
 ```
 
-6.1. Escape characters
+### 6.1. Escape characters
 
 Puppet uses backslashes as an escape character. For both single- and double-quoted strings, escape the backslash to remove this special meaning: `//`. This means that for every backslash you want to include in the resulting string, use two backslashes. For two literal backslashes, you would use four backslashes in total.
 
@@ -368,9 +369,9 @@ Symbolic links must be declared with an ensure value of `ensure => link` and exp
 **Good:**
 
 ```
-  file { '/var/log/syslog':
+file { '/var/log/syslog':
       ensure => file,
-      mode   => 'o-rwx',
+      mode   => '0644',
   }
 ```
 
