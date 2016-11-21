@@ -48,7 +48,7 @@ We can never cover every circumstance you might run into when developing Puppet 
 
 ## 4. Versioning
 
-Your module must be versioned. We recommend (and use) [SemVer](http://semver.org/spec/v1.0.0.html); meaning that for a version x.y.z., an increase in x indicates backwards incompatible changes or a complete rewrite, an increase in y indicates the addition of new features, and an increase in z indicates non-breaking bug fixes. 
+Your module must be versioned. We recommend (and use) [SemVer](http://semver.org/spec/v1.0.0.html); meaning that for a version x.y.z., an increase in x indicates backwards incompatible changes or a complete rewrite, an increase in y indicates the non-breaking addition of new features, and an increase in z indicates non-breaking bug fixes. 
 
 This style guide is versioned using SemVer.
 
@@ -60,6 +60,7 @@ Module manifests:
 * Must not use literal tab characters,
 * Must not contain trailing whitespace,
 * Must include trailing commas after all resource attributes and parameter definitions,
+* Must end the last line with a new line,
 * Should not exceed a 140-character line width, except where such a limit would be impractical,
 * Should leave one empty line between resources, except when using dependency chains, and
 * May align hash rockets (`=>`) within blocks of attributes, remembering to arrange hashes for maximum readability first.
@@ -100,7 +101,7 @@ warning('Class[\'apache\'] parameter purge_vdir is deprecated in favor of purge_
 
 ### 6.1. Escape characters
 
-Puppet uses backslashes as an escape character. For both single- and double-quoted strings, escape the backslash to remove this special meaning: `//`. This means that for every backslash you want to include in the resulting string, use two backslashes. For two literal backslashes, you would use four backslashes in total.
+Puppet uses backslashes as an escape character. For both single- and double-quoted strings, escape the backslash to remove this special meaning: `\\`. This means that for every backslash you want to include in the resulting string, use two backslashes. For two literal backslashes, you would use four backslashes in total.
 
 Do not rely on unrecognized escaped characters as a method for including the backslash and the character following it.
 
@@ -124,7 +125,7 @@ file { '/etc/ntp.conf': … }
 
 ## 8. Module metadata
 
-Every publicly available module must have metadata defined in the metadata.json file.  Your metadata should follow the below format:
+Every module must have metadata defined in the metadata.json file.  Your metadata should follow the below format:
 
 ```
     {
@@ -555,7 +556,7 @@ The following example follows the recommended style:
 
 We recommend that you split your module into public and private classes and defined types where possible. Public classes or defined types should contain the parts of the module meant to be configured or customized by the user, while private classes should contain things you do not expect the user to change via parameters. Separating into public and private classes or defined types helps build reusable and readable code.
 
-You should help indicate to the user which classes are which by both calling out the public classes in the README and making sure all public classes have complete [comments](#comments).
+You should help indicate to the user which classes are which by making sure all public classes have complete [comments](#comments) and denoting public and private classes in your documentation. Use the documentation tags "@api private" and "@api public" to make this clear.
 
 ### 10.4. Chaining Arrow Syntax
 
@@ -581,6 +582,7 @@ Package['httpd']
 ### 10.5. Nested classes or defined types
 
 Classes and defined resource types must not be defined within other classes or defined types. Classes and defined types should be declared as close to node scope as possible. If you have a class or defined type which requires another class or defined type, graceful failures must be in place if those required classes or defined types are not declared elsewhere. 
+
 
 **Very Bad:**
 
