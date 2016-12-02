@@ -64,6 +64,86 @@ Module manifests:
 * Should not exceed a 140-character line width, except where such a limit would be impractical,
 * Should leave one empty line between resources, except when using dependency chains, and
 * May align hash rockets (`=>`) within blocks of attributes, remembering to arrange hashes for maximum readability first.
+* Must use one space between the resource type and opening brace, one space between the opening brace and the title, and no spaces between the title and colon.
+
+**Good**:
+
+```
+file { '/tmp/foo':
+```
+
+**Bad**:
+
+```
+# space between title and colon
+file { '/tmp/foo' :
+
+# no spaces
+file{'/tmp/foo':
+
+# too many spaces
+file     { '/tmp/foo':
+```
+
+### 5.1: Arrays and hashes
+
+In data types such as Arrays and Hashes, place multiple elements on multiple lines. This makes it easier to see what has changed during code review.
+
+Arrays and Hashes should have:
+
+* Each element on its own line,
+* Each new element line indented one level,
+* First and last lines used only for the syntax of that data type.
+
+**Good**:
+
+```
+# array with multiple elements on multiple lines
+service { 'foo':
+  require => [
+    File['foo_config'],
+    File['foo_sysconfig'],
+  ],
+}
+
+# hash with multiple elements on multiple lines
+$myhash = {
+  key       => 'some value',
+  other_key => 'some other value',
+}
+```
+
+**Bad**:
+
+```
+# array with multiple elements on same line
+service { 'foo':
+  require => [ File['foo_config'], File['foo_sysconfig'], ],
+}
+
+# hash with multiple elements on same line
+$myhash = { key => 'some value', other_key => 'some other value', }
+
+# array with multiple elements on different lines, but syntax and element share a line
+service { 'foo':
+  require => [ File['foo_config'],
+    File['foo_sysconfig'],
+  ],
+}
+
+# hash with multiple elements on different lines, but syntax and element share a line
+$myhash = { key => 'some value',
+  other_key     => 'some other value',
+}
+
+# array with indention of elements past one stop
+service { 'foo':
+  require => [
+              File['foo_config'],
+              File['foo_sysconfig'],
+  ],
+}
+```
 
 ## 6. Quoting
 
